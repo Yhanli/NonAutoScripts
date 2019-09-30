@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*
-import sqlite3,os,sys,logging
+import sqlite3,os,sys,logging,requests, random
 
 currentDir = os.path.dirname(os.path.realpath(__file__))
 try:
@@ -32,6 +32,41 @@ with open('/data/Scripts/conf/proxies.txt', 'r') as proFile:   #currentDir + '/c
     proxies = [{'http': i, 'https': i} for i in proxies]
 
 proxies = [proxies[1]]
-header = [header[0]]
+headers = [header[0]]
+
+def testwrite(data):
+    try:
+        with open(currentDir + '/testwrite.html','wb+') as fp:
+            fp.write(data)
+    except:
+        with open(currentDir + '/testwrite.txt','w+') as fp:
+            fp.write(data)
+
+def clear_db(table):
+    c = DB.cursor()
+    c.execute("DELETE FROM %s"%table)
+    DB.commit()
+
+
+def test_ip():
+    global proxies
+    proxy = random.choice(proxies)
+    header = random.choice(headers)
+    url = 'https://whatismyipaddress.com/'
+    response = requests.get(url, headers=header, proxies = proxy)
+    checked = ('IP == Proxy =========>>>{0} --------- {1}'.format(str(proxy).split('@')[-1].split(':')[0] in str(response.text),str(proxy).split('@')[-1].split(':')[0]))
+    logger.debug(checked)
+    return True if 'True' in checked else False
+
+
+def GetUrlContent(url = '',useProxy = True):
+    try:
+        if useProxy:
+            return requests.get(url, headers=random.choice(header), proxies = random.choice(proxies), timeout = 10)
+        else:
+            return requests.get(url, timeout = 10)
+    except Exception as e :
+        logger.debug('Error occur when requesting url: {url}:{error}'.format(url=url, error=str(e)) )
+        return ('Error occur when requesting url: {url}:{error}'.format(url=url, error=str(e)) )
 
 # will not need to set up currentDir, data.db will always be generated with types enable, loaded proxies, common headers
