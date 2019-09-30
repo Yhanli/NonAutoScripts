@@ -25,7 +25,6 @@ header = [
     {'user-agent': 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18'},
     {'user-agent': 'Mozilla/5.0 (MSIE 10.0; Windows NT 6.1; Trident/5.0)'}]  # headers
 
-currentDir = os.path.dirname(os.path.realpath(__file__))
 with open('/data/Scripts/conf/proxies.txt', 'r') as proFile:   #currentDir + '/conf/proxies.txt'
     proxies = [i.replace('\n', '').replace('\r', '') for i in proFile.readlines()]
     proxies = ['http://' + i.split(':')[2] + ':' + i.split(':')[3] + '@' + i.split(':')[0] + ':' + i.split(':')[1] for i
@@ -34,3 +33,5 @@ with open('/data/Scripts/conf/proxies.txt', 'r') as proFile:   #currentDir + '/c
 
 proxies = [proxies[1]]
 header = [header[0]]
+
+# will not need to set up currentDir, data.db will always be generated with types enable, loaded proxies, common headers
