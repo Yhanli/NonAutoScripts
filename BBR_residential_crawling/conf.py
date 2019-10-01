@@ -10,7 +10,7 @@ except:
     mode = '100'
 print('Mode %s'%mode)
 
-DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+# DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
