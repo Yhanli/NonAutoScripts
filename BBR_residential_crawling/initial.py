@@ -169,6 +169,9 @@ def Get_Bayley_Main(url):
 
 def init_db():
     DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    if mode != '1' or mode != '2':
+        clear_db(DB,'Residential_Extract')
+        clear_db(DB,'Residential_Extract_duplicate')
     logger.debug("initializing database")
     c = DB.cursor()
     c.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Residential_Extract'")
