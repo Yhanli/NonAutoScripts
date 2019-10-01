@@ -26,7 +26,7 @@ header = [
     {'user-agent': 'Opera/9.80 (Windows NT 6.1; WOW64) Presto/2.12.388 Version/12.18'},
     {'user-agent': 'Mozilla/5.0 (MSIE 10.0; Windows NT 6.1; Trident/5.0)'}]  # headers
 
-with open('/data/Scripts/conf/proxies.txt', 'r') as proFile:   #currentDir + '/conf/proxies.txt'
+with open('/usr/local/services/spider/conf/proxies.txt', 'r') as proFile:   #currentDir + '/conf/proxies.txt'
     proxies = [i.replace('\n', '').replace('\r', '') for i in proFile.readlines()]
     proxies = ['http://' + i.split(':')[2] + ':' + i.split(':')[3] + '@' + i.split(':')[0] + ':' + i.split(':')[1] for i
                in proxies]
