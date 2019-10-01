@@ -168,6 +168,7 @@ def Get_Bayley_Main(url):
     return next_page
 
 def init_db():
+    DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     logger.debug("initializing database")
     c = DB.cursor()
     c.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Residential_Extract'")
