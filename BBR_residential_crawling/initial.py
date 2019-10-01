@@ -81,7 +81,7 @@ def Get_Raywhite_Main(url, page):
             'orderBy': 'Highest Price'
         }
     response = requests.get(url, headers=random.choice(header), proxies = random.choice(proxies), data = data)
-    testwrite(response.content)
+    # testwrite(response.content)
     soup = GetBSsoup(response)
     c = DB.cursor()
 
@@ -113,7 +113,7 @@ def barfoot(url):
 def Get_Barfoot_Main(url):
     DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     response = requests.get(url, headers=random.choice(header), proxies = random.choice(proxies))
-    testwrite(response.content)
+    # testwrite(response.content)
     soup = GetBSsoup(response)
     c = DB.cursor()
     try:
