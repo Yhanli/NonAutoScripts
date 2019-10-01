@@ -9,11 +9,30 @@ import time,random
 # pre_configured setup files
 from conf import *
 
+executor = ThreadPoolExecutor(max_workers=4)
 
+def remove_duplicate():
+    c = DB.cursor()
+    c.execute('SELECT * FROM Residential_Extract')
+    All_Listing = c.fetchall()
 
+    listing_dic = {}
+
+    for listing in All_Listing:
+        listing_dic[listing[1]] = listing
+    print(listing_dic)
+
+    for key,val in listing_dic.items():
+        print(key)
+        listing_url = val[1]
+        listing_number = val[2]
+        listing_address = val[3]
+        listing_title = val[4]
+        c.execute('INSERT INTO Residential_Extract_duplicate (link,listing_id,listing_address,listing_title) VALUES (?,?,?,?)',(listing_url, listing_number,listing_address,listing_title))
+    DB.commit()
 
 def raywhite(url):
-    count = 112
+    count = 0
     while url != None:
         url = Get_Raywhite_Main(url,count)
         count += 1
@@ -46,7 +65,10 @@ def Get_Raywhite_Main(url, page):
     for link in links:
         listing_url = link.find('a').get('href')
         listing_number = link.find('a').get('href').split('/')[-1]
-        listing_address = link.find('p').text.split(',')[1].strip().replace('...','') + ', ' + link.find('p').text.split(',')[0]
+        try:
+            listing_address = link.find('p').text.split(',')[1].strip().replace('...','') + ', ' + link.find('p').text.split(',')[0]
+        except:
+            listing_address = ''
         try:
             listing_title = link.find('h3').text
         except:
@@ -119,9 +141,12 @@ def Get_Bayley_Main(url):
     return next_page
 
 def mainRunner():
-    # bayleys('https://www.bayleys.co.nz/search?SearchType=Residential&Radius=6&ListingType=None&OrderType=LatestListing&Page=1&KeywordIsListingId=False&TabType=Properties&ViewType=Gallery&AuctionsOnly=False&PageSize=12')
-    # barfoot('https://www.barfoot.co.nz/properties/residential/page=1')
-    raywhite('http://raywhite.co.nz/Residential_Property')
+    executor.submit(bayleys,'https://www.bayleys.co.nz/search?SearchType=Residential&Radius=6&ListingType=None&OrderType=LatestListing&Page=1&KeywordIsListingId=False&TabType=Properties&ViewType=Gallery&AuctionsOnly=False&PageSize=12')
+    executor.submit(barfoot,'https://www.barfoot.co.nz/properties/residential/page=1')
+    executor.submit(raywhite,'http://raywhite.co.nz/Residential_Property')
+
+    executor.shutdown(wait=True)
+    # remove_duplicate()
 
 def init_db():
     logger.debug("initializing database")
@@ -131,6 +156,20 @@ def init_db():
         logger.debug('create database')
         c.execute("""
            CREATE TABLE Residential_Extract
+       (
+            id integer PRIMARY KEY,
+            link text NOT NULL,
+            listing_id text,
+            listing_address text,
+            listing_title text,
+            json blob
+        )      
+        """)
+    c.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Residential_Extract_duplicate'")
+    if c.fetchone() is None:
+        logger.debug('create database')
+        c.execute("""
+           CREATE TABLE Residential_Extract_duplicate
        (
             id integer PRIMARY KEY,
             link text NOT NULL,
