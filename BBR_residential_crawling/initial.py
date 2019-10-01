@@ -5,11 +5,35 @@
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time,random
+import csv
 
 # pre_configured setup files
 from conf import *
 
 executor = ThreadPoolExecutor(max_workers=4)
+
+
+def CompareExport():
+
+    with open('listings.csv', 'r', encoding='utf-8') as fp:
+        csv_file = fp.read()
+    dataCSV = list()
+    c = DB.cursor()
+    c.execute('SELECT * FROM Residential_Extract_duplicate')
+    all_listings = c.fetchall()
+    for listing in all_listings:
+        listing_url = listing[1]
+        listing_number = listing[2]
+        listing_address = listing[3]
+        listing_title = listing[4]
+        if listing_number.strip() + '|' in csv_file:
+            exist = 'Yes'
+        else:
+            exist = 'No'
+        dataCSV.append([listing_url, listing_number,listing_address,listing_title,exist])
+    with open('Compared.csv', 'w+') as csvfile:
+        csvwriter = csv.writer(csvfile, lineterminator = '\n')
+        csvwriter.writerows(dataCSV)
 
 def remove_duplicate():
     c = DB.cursor()
@@ -39,6 +63,7 @@ def raywhite(url):
         # break
 
 def Get_Raywhite_Main(url, page):
+    DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     logger.debug('currently on page %s'%page)
     data = {}
     if page != 0:
@@ -86,6 +111,7 @@ def barfoot(url):
         url = Get_Barfoot_Main(url)
         
 def Get_Barfoot_Main(url):
+    DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     response = requests.get(url, headers=random.choice(header), proxies = random.choice(proxies))
     testwrite(response.content)
     soup = GetBSsoup(response)
@@ -116,6 +142,7 @@ def bayleys(url):
     while url != None:
         url = Get_Bayley_Main(url)
 def Get_Bayley_Main(url):
+    DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     response = requests.get(url, headers=random.choice(header), proxies = random.choice(proxies))
     # testwrite(response.content)
     soup = GetBSsoup(response)
@@ -139,14 +166,6 @@ def Get_Bayley_Main(url):
         c.execute('INSERT INTO Residential_Extract (link,listing_id,listing_address,listing_title) VALUES (?,?,?,?)',(listing_url, listing_number,listing_address,listing_title))
     DB.commit()
     return next_page
-
-def mainRunner():
-    executor.submit(bayleys,'https://www.bayleys.co.nz/search?SearchType=Residential&Radius=6&ListingType=None&OrderType=LatestListing&Page=1&KeywordIsListingId=False&TabType=Properties&ViewType=Gallery&AuctionsOnly=False&PageSize=12')
-    executor.submit(barfoot,'https://www.barfoot.co.nz/properties/residential/page=1')
-    executor.submit(raywhite,'http://raywhite.co.nz/Residential_Property')
-
-    executor.shutdown(wait=True)
-    # remove_duplicate()
 
 def init_db():
     logger.debug("initializing database")
@@ -179,6 +198,14 @@ def init_db():
             json blob
         )      
         """)
+
+def mainRunner():
+    # executor.submit(bayleys,'https://www.bayleys.co.nz/search?SearchType=Residential&Radius=6&ListingType=None&OrderType=LatestListing&Page=1&KeywordIsListingId=False&TabType=Properties&ViewType=Gallery&AuctionsOnly=False&PageSize=12')
+    # executor.submit(barfoot,'https://www.barfoot.co.nz/properties/residential/page=1')
+    # executor.submit(raywhite,'http://raywhite.co.nz/Residential_Property')
+    # executor.shutdown(wait=True)
+    # remove_duplicate()
+    CompareExport()
 
 
 def main():
