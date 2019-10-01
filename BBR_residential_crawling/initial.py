@@ -44,10 +44,10 @@ def remove_duplicate():
 
     for listing in All_Listing:
         listing_dic[listing[1]] = listing
-    print(listing_dic)
+    logger.debug(listing_dic)
 
     for key,val in listing_dic.items():
-        print(key)
+        logger.debug('processing %s'%key)
         listing_url = val[1]
         listing_number = val[2]
         listing_address = val[3]
@@ -98,7 +98,7 @@ def Get_Raywhite_Main(url, page):
             listing_title = link.find('h3').text
         except:
             listing_title = ''
-        print((listing_url, listing_number,listing_address,listing_title))
+        # print((listing_url, listing_number,listing_address,listing_title))
         c.execute('INSERT INTO Residential_Extract (link,listing_id,listing_address,listing_title) VALUES (?,?,?,?)',(listing_url, listing_number,listing_address,listing_title))
     DB.commit()
     if '>Next &gt;</span>' not in str(soup):
@@ -121,7 +121,7 @@ def Get_Barfoot_Main(url):
     except Exception as e:
         logger.debug(str(e))
         return None
-    print(next_page)
+    logger.debug(next_page)
     links = soup.find_all('a', class_='property-link')
     insert_item = []
     for link in links:
@@ -132,7 +132,7 @@ def Get_Barfoot_Main(url):
         #     # listing_title = soup.find('a', attrs={'title':'View  listing #{0} with more detail'.format(listing_number)}).text.strip()
         # except:
         listing_title = ''
-        print((listing_url, listing_number,listing_address,listing_title))
+        # print((listing_url, listing_number,listing_address,listing_title))
         c.execute('INSERT INTO Residential_Extract (link,listing_id,listing_address,listing_title) VALUES (?,?,?,?)',(listing_url, listing_number,listing_address,listing_title))
     DB.commit()
     return next_page
