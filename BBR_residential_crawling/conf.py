@@ -1,6 +1,7 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*
 import sqlite3,os,sys,logging,requests, random
+from bs4 import BeautifulSoup
 
 currentDir = os.path.dirname(os.path.realpath(__file__))
 try:
@@ -69,4 +70,6 @@ def GetUrlContent(url = '',useProxy = True):
         logger.debug('Error occur when requesting url: {url}:{error}'.format(url=url, error=str(e)) )
         return ('Error occur when requesting url: {url}:{error}'.format(url=url, error=str(e)) )
 
+def GetBSsoup(response):
+    return BeautifulSoup(response.text, features='lxml')
 # will not need to set up currentDir, data.db will always be generated with types enable, loaded proxies, common headers
