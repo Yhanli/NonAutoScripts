@@ -200,20 +200,27 @@ def init_db():
         """)
 
 def mainRunner():
-    # executor.submit(bayleys,'https://www.bayleys.co.nz/search?SearchType=Residential&Radius=6&ListingType=None&OrderType=LatestListing&Page=1&KeywordIsListingId=False&TabType=Properties&ViewType=Gallery&AuctionsOnly=False&PageSize=12')
-    # executor.submit(barfoot,'https://www.barfoot.co.nz/properties/residential/page=1')
-    # executor.submit(raywhite,'http://raywhite.co.nz/Residential_Property')
-    # executor.shutdown(wait=True)
-    # remove_duplicate()
-    CompareExport()
+    if mode == '1':
+        executor.submit(bayleys,'https://www.bayleys.co.nz/search?SearchType=Residential&Radius=6&ListingType=None&OrderType=LatestListing&Page=1&KeywordIsListingId=False&TabType=Properties&ViewType=Gallery&AuctionsOnly=False&PageSize=12')
+        executor.submit(barfoot,'https://www.barfoot.co.nz/properties/residential/page=1')
+        executor.submit(raywhite,'http://raywhite.co.nz/Residential_Property')
+        executor.shutdown(wait=True)
+        remove_duplicate()
+    elif mode == '2':
+        CompareExport()
+    else:
+        executor.submit(bayleys,'https://www.bayleys.co.nz/search?SearchType=Residential&Radius=6&ListingType=None&OrderType=LatestListing&Page=1&KeywordIsListingId=False&TabType=Properties&ViewType=Gallery&AuctionsOnly=False&PageSize=12')
+        executor.submit(barfoot,'https://www.barfoot.co.nz/properties/residential/page=1')
+        executor.submit(raywhite,'http://raywhite.co.nz/Residential_Property')
+        executor.shutdown(wait=True)
+        remove_duplicate()
+        CompareExport()
 
 
 def main():
     if test_ip():
         init_db()
         mainRunner()
-
-
 
 
 if __name__ == "__main__":
