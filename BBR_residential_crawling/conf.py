@@ -44,9 +44,12 @@ def testwrite(data):
             fp.write(data)
 
 def clear_db(DB,table):
-    c = DB.cursor()
-    c.execute("DELETE FROM %s"%table)
-    DB.commit()
+    try:
+        c = DB.cursor()
+        c.execute("DELETE FROM %s"%table)
+        DB.commit()
+    except Exception as e:
+        logger.debug('Failed to clear DB, %s'%str(e))
 
 
 def test_ip():
