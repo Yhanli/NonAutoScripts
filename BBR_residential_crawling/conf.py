@@ -43,7 +43,7 @@ def testwrite(data):
         with open(currentDir + '/testwrite.txt','w+') as fp:
             fp.write(data)
 
-def clear_db(table):
+def clear_db(DB,table):
     c = DB.cursor()
     c.execute("DELETE FROM %s"%table)
     DB.commit()
