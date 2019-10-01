@@ -64,7 +64,7 @@ def raywhite(url):
 
 def Get_Raywhite_Main(url, page):
     DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-    logger.debug('currently on page %s'%page)
+    logger.debug('http://raywhite.co.nz/Residential_Property ==>currently on page %s'%page)
     data = {}
     if page != 0:
         data = {
