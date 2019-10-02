@@ -59,7 +59,7 @@ def CompareExport():
     from_email='Monthly_BBR@hougarden.com', #yuhan.lee@hougarden.com
     to_emails=address, # address
     subject='Monthly BBR_CompareHouOne %s'%str(datetime.now().date),
-    html_content='Find in file Attachment'
+    html_content='Find in file Attachment. ' * 10
     )
 
     with open(os.path.join(currentDir,'Compared.csv'), 'rb') as f:
@@ -78,7 +78,12 @@ def CompareExport():
     # sg = SendGridAPIClient(key)
     # response = sg.send(message)
     sg = SendGridAPIClient(key)
-    response = sg.send(message)
+    # response = sg.send(message)
+    try:
+        response = sg.client.mail.send.post(request_body=message.get())
+    except Exception as e:
+        print(str(e))
+        sys.exit(1)
 
 
 
