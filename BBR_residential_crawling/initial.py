@@ -5,7 +5,7 @@
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time,random
-import csv, time, urllib, os
+import csv, time, urllib, os, base64
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Attachment
 from datetime import datetime
@@ -46,6 +46,7 @@ def CompareExport():
             exist_one = 'Yes'
         else:
             exist_one = 'No'
+        logger.debug(listing_url)
         
         dataCSV.append([company, listing_url, listing_number, listing_address, listing_title, exist_hou, exist_one])
     with open('Compared.csv', 'w+') as csvfile:
