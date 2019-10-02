@@ -72,7 +72,7 @@ def CompareExport():
     attachment.content = encoded
     attachment.type = "application/pdf"
     attachment.filename = "Compared.csv"
-    attachment.disposition = disposition("attachment")
+    attachment.disposition = "attachment"
     message.add_attachment(attachment)
 
     # sg = SendGridAPIClient(key)
