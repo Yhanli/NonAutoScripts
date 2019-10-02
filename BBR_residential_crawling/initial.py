@@ -14,6 +14,7 @@ executor = ThreadPoolExecutor(max_workers=4)
 DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
 
 def CompareExport():
+
     urllib.request.urlretrieve('https://hougarden-img.oss-ap-southeast-2.aliyuncs.com/crawler_conf/listings_hou.csv','/tmp/listings_hou.csv')
     urllib.request.urlretrieve('https://hougarden-img.oss-ap-southeast-2.aliyuncs.com/crawler_conf/listings_one.csv','/tmp/listings_one.csv')
     with open('/tmp/listings_hou.csv', 'r', encoding='utf-8') as fp:
@@ -183,7 +184,7 @@ def Get_Bayley_Main(url):
     return next_page
 
 def init_db():
-    
+
     if mode != '1' or mode != '2':
         clear_db(DB,'Residential_Extract')
     logger.debug("initializing database")
@@ -200,7 +201,7 @@ def init_db():
             listing_address text,
             listing_title text,
             json blob
-        )      
+        )
         """)
     c.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Residential_Extract_duplicate'")
     if c.fetchone() is None:
