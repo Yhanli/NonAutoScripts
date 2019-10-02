@@ -35,6 +35,9 @@ with open('/usr/local/services/spider/conf/proxies.txt', 'r') as proFile:   #cur
 proxies = [proxies[1]]
 headers = [header[0]]
 
+with open('/usr/local/services/spider/conf/sendgrid_key', 'r') as fp:
+    key = fp.read()
+
 def testwrite(data):
     try:
         with open(currentDir + '/testwrite.html','wb+') as fp:
