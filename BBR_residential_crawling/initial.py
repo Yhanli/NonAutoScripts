@@ -77,7 +77,7 @@ def CompareExport():
         dataCSV.append([company, listing_url, listing_number, listing_address, listing_title, exist_hou, exist_one])
     print(total)
     total = [
-        [''],
+        ['','Heading','#counted'],
         ['','HouBarfoot - yes', total['HouBarfoot']['yes']],
         ['','HouBarfoot - no', total['HouBarfoot']['no']],
         ['','HouBarfoot -total', total['HouBarfoot']['no'] + total['HouBarfoot']['yes'] ],
@@ -92,7 +92,7 @@ def CompareExport():
         [''],
         ['','total -yes', total['HouBarfoot']['yes'] + total['HouBayleys']['yes'] + total['HouRaywhite']['yes']],
         ['','total -no', total['HouBarfoot']['no'] + total['HouBayleys']['no'] + total['HouRaywhite']['no']],
-        ['','total', len(total)],
+
         [''],
         [''],
         ['','OneBarfoot - yes', total['OneBarfoot']['yes']],
