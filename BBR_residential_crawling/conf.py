@@ -51,7 +51,6 @@ def clear_db(DB,table):
     except Exception as e:
         logger.debug('Failed to clear DB, %s'%str(e))
 
-
 def test_ip():
     global proxies
     proxy = random.choice(proxies)
