@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import time,random
 import csv, time, urllib, os, base64
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Attachment
+from sendgrid.helpers.mail import Mail, Attachment, disposition
 from datetime import datetime
 
 # pre_configured setup files
@@ -18,41 +18,41 @@ DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYP
 
 def CompareExport():
 
-    r = requests.get('http://s.hougarden.com/export/hougarden_active_listings.csv', allow_redirects=True)
-    open('/tmp/listings_hou.csv', 'wb').write(r.content)
-    r = requests.get('http://s.oneroof.co.nz/export/oneroof_active_listings.csv', allow_redirects=True)
-    open('/tmp/listings_one.csv', 'wb').write(r.content)
+    # r = requests.get('http://s.hougarden.com/export/hougarden_active_listings.csv', allow_redirects=True)
+    # open('/tmp/listings_hou.csv', 'wb').write(r.content)
+    # r = requests.get('http://s.oneroof.co.nz/export/oneroof_active_listings.csv', allow_redirects=True)
+    # open('/tmp/listings_one.csv', 'wb').write(r.content)
 
-    with open('/tmp/listings_hou.csv', 'r', encoding='utf-8') as fp:
-        csv_file_hou = fp.read()
-    with open('/tmp/listings_one.csv', 'r', encoding='utf-8') as fp:
-        csv_file_one = fp.read()
-    dataCSV = list()
-    c = DB.cursor()
-    c.execute('SELECT * FROM Residential_Extract_duplicate')
-    all_listings = c.fetchall()
-    for listing in all_listings:
-        company = listing[1].split('www.')[-1].split('.co')[0]
-        listing_url = listing[1]
-        listing_number = listing[2]
-        listing_address = listing[3]
-        listing_title = listing[4]
-        if listing_number.strip() + '|' in csv_file_hou:
-            exist_hou = 'Yes'
-        else:
-            exist_hou = 'No'
+    # with open('/tmp/listings_hou.csv', 'r', encoding='utf-8') as fp:
+    #     csv_file_hou = fp.read()
+    # with open('/tmp/listings_one.csv', 'r', encoding='utf-8') as fp:
+    #     csv_file_one = fp.read()
+    # dataCSV = list()
+    # c = DB.cursor()
+    # c.execute('SELECT * FROM Residential_Extract_duplicate')
+    # all_listings = c.fetchall()
+    # for listing in all_listings:
+    #     company = listing[1].split('www.')[-1].split('.co')[0]
+    #     listing_url = listing[1]
+    #     listing_number = listing[2]
+    #     listing_address = listing[3]
+    #     listing_title = listing[4]
+    #     if listing_number.strip() + '|' in csv_file_hou:
+    #         exist_hou = 'Yes'
+    #     else:
+    #         exist_hou = 'No'
 
-        if listing_number.strip() + '|' in csv_file_one:
-            exist_one = 'Yes'
-        else:
-            exist_one = 'No'
-        logger.debug(listing_url)
+    #     if listing_number.strip() + '|' in csv_file_one:
+    #         exist_one = 'Yes'
+    #     else:
+    #         exist_one = 'No'
+    #     logger.debug(listing_url)
         
-        dataCSV.append([company, listing_url, listing_number, listing_address, listing_title, exist_hou, exist_one])
-    with open('Compared.csv', 'w+') as csvfile:
-        csvwriter = csv.writer(csvfile, lineterminator = '\n')
-        csvwriter.writerow(['company', 'url', 'listingNo', 'ListingAddr', 'ListingTittle','ExistOnHougarden', 'ExistOnOneroof'])
-        csvwriter.writerows(dataCSV)
+    #     dataCSV.append([company, listing_url, listing_number, listing_address, listing_title, exist_hou, exist_one])
+    # with open('Compared.csv', 'w+') as csvfile:
+    #     csvwriter = csv.writer(csvfile, lineterminator = '\n')
+    #     csvwriter.writerow(['company', 'url', 'listingNo', 'ListingAddr', 'ListingTittle','ExistOnHougarden', 'ExistOnOneroof'])
+    #     csvwriter.writerows(dataCSV)
     
     address = 'yuhan.lee@hougarden.com'
     message = Mail(
@@ -70,17 +70,16 @@ def CompareExport():
 
     attachment = Attachment()
     attachment.content = encoded
-    attachment.type = "application/csv"
+    attachment.type = "application/pdf"
     attachment.filename = "Compared.csv"
-    attachment.disposition = "attachment"
-    attachment.content_id = "CSV Document file"
+    attachment.disposition = disposition("attachment")
     message.add_attachment(attachment)
 
     # sg = SendGridAPIClient(key)
     # response = sg.send(message)
     sg = SendGridAPIClient(key)
+    response = sg.send(message)
 
-    response = sg.client.mail.send.post(request_body=message.get())
 
 
 
