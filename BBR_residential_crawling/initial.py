@@ -77,40 +77,43 @@ def CompareExport():
         dataCSV.append([company, listing_url, listing_number, listing_address, listing_title, exist_hou, exist_one])
     print(total)
     total = [
+        [''],
         ['','HouBarfoot - yes', total['HouBarfoot']['yes']],
         ['','HouBarfoot - no', total['HouBarfoot']['no']],
         ['','HouBarfoot -total', total['HouBarfoot']['no'] + total['HouBarfoot']['yes'] ],
-
+        [''],
         ['','HouBayleys - yes', total['HouBayleys']['yes']],
         ['','HouBayleys - no', total['HouBayleys']['no']],
         ['','HouBayleys -total', total['HouBayleys']['no'] + total['HouBayleys']['yes'] ],
-
+        [''],
         ['','HouRaywhite - yes', total['HouBarfoot']['yes']],
         ['','HouRaywhite - no', total['HouRaywhite']['no']],
         ['','HouRaywhite -total', total['HouRaywhite']['no'] + total['HouRaywhite']['yes'] ],
+        [''],
         ['','total -yes', total['HouBarfoot']['yes'] + total['HouBayleys']['yes'] + total['HouRaywhite']['yes']],
         ['','total -no', total['HouBarfoot']['no'] + total['HouBayleys']['no'] + total['HouRaywhite']['no']],
         ['','total', len(total)],
-
-
+        [''],
+        [''],
         ['','OneBarfoot - yes', total['OneBarfoot']['yes']],
         ['','OneBarfoot - no', total['OneBarfoot']['no']],
         ['','OneBarfoot -total', total['OneBarfoot']['no'] + total['OneBarfoot']['yes'] ],
-
+        [''],
         ['','OneBayleys - yes', total['OneBayleys']['yes']],
         ['','OneBayleys - no', total['OneBayleys']['no']],
         ['','OneBayleys -total', total['OneBayleys']['no'] + total['OneBayleys']['yes'] ],
-
+        [''],
         ['','OneRaywhite - yes', total['OneRaywhite']['yes']],
         ['','OneRaywhite - no', total['OneRaywhite']['no']],
         ['','OneRaywhite -total', total['OneRaywhite']['no'] + total['OneRaywhite']['yes'] ],
+        [''],
         ['','total -yes', total['OneBarfoot']['yes'] + total['OneBayleys']['yes'] + total['OneRaywhite']['yes']],
         ['','total -no', total['OneBarfoot']['no'] + total['OneBayleys']['no'] + total['OneRaywhite']['no']],
-        ['','total', len(total)],
+        ['','total', len(all_listings)],
 
     ]
-    for i in total:
-        print(i)
+    for i in range(len(total)):
+        dataCSV[i] = dataCSV[i] + total[i]
 
 
     with open('Compared.csv', 'w+') as csvfile:
