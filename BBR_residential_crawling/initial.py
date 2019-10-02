@@ -5,7 +5,10 @@
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time,random
-import csv, time, urllib
+import csv, time, urllib, os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, Attachment
+from datetime import datetime
 
 # pre_configured setup files
 from conf import *
@@ -15,12 +18,11 @@ DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYP
 
 def CompareExport():
 
-
     r = requests.get('http://s.hougarden.com/export/hougarden_active_listings.csv', allow_redirects=True)
     open('/tmp/listings_hou.csv', 'wb').write(r.content)
     r = requests.get('http://s.oneroof.co.nz/export/oneroof_active_listings.csv', allow_redirects=True)
     open('/tmp/listings_one.csv', 'wb').write(r.content)
-    
+
     with open('/tmp/listings_hou.csv', 'r', encoding='utf-8') as fp:
         csv_file_hou = fp.read()
     with open('/tmp/listings_one.csv', 'r', encoding='utf-8') as fp:
@@ -50,6 +52,32 @@ def CompareExport():
         csvwriter = csv.writer(csvfile, lineterminator = '\n')
         csvwriter.writerow(['company', 'url', 'listingNo', 'ListingAddr', 'ListingTittle','ExistOnHougarden', 'ExistOnOneroof'])
         csvwriter.writerows(dataCSV)
+    
+    address = 'yuhan.lee@hougarden.com'
+    message = Mail(
+    from_email='Monthly_BBR@hougarden.com', #yuhan.lee@hougarden.com
+    to_emails=address, # address
+    subject='Monthly BBR_CompareHouOne %s'%str(datetime.now().date),
+    html_content='Find in file Attachment'
+    )
+
+    with open(os.path.join(currentDir,'Compared.csv'), 'rb') as f:
+        data = f.read()
+
+    # Encode contents of file as Base 64
+    encoded = base64.b64encode(data).decode()
+
+    attachment = Attachment()
+    attachment.content = encoded
+    attachment.type = "application/csv"
+    attachment.filename = "Compared.csv"
+    attachment.disposition = "attachment"
+    attachment.content_id = "CSV Document file"
+    message.add_attachment(attachment)
+
+    sg = SendGridAPIClient(key)
+    response = sg.send(message)
+
 
 def remove_duplicate():
     c = DB.cursor()
