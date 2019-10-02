@@ -5,40 +5,55 @@
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time,random
-import csv
+import csv, time, urllib
 
 # pre_configured setup files
 from conf import *
 
 executor = ThreadPoolExecutor(max_workers=4)
-
+DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
 
 def CompareExport():
-
-    with open('listings.csv', 'r', encoding='utf-8') as fp:
-        csv_file = fp.read()
+    urllib.request.urlretrieve('https://hougarden-img.oss-ap-southeast-2.aliyuncs.com/crawler_conf/listings_hou.csv','/tmp/listings_hou.csv')
+    urllib.request.urlretrieve('https://hougarden-img.oss-ap-southeast-2.aliyuncs.com/crawler_conf/listings_one.csv','/tmp/listings_one.csv')
+    with open('/tmp/listings_hou.csv', 'r', encoding='utf-8') as fp:
+        csv_file_hou = fp.read()
+    with open('/tmp/listings_one.csv', 'r', encoding='utf-8') as fp:
+        csv_file_one = fp.read()
     dataCSV = list()
     c = DB.cursor()
     c.execute('SELECT * FROM Residential_Extract_duplicate')
     all_listings = c.fetchall()
     for listing in all_listings:
+        company = listing[1].split('www.')[-1].split('.co')[0]
         listing_url = listing[1]
         listing_number = listing[2]
         listing_address = listing[3]
         listing_title = listing[4]
-        if listing_number.strip() + '|' in csv_file:
-            exist = 'Yes'
+        if listing_number.strip() + '|' in csv_file_hou:
+            exist_hou = 'Yes'
         else:
-            exist = 'No'
-        dataCSV.append([listing_url, listing_number,listing_address,listing_title,exist])
+            exist_hou = 'No'
+
+        if listing_number.strip() + '|' in csv_file_one:
+            exist_one = 'Yes'
+        else:
+            exist_one = 'No'
+        
+        dataCSV.append([company, listing_url, listing_number, listing_address, listing_title, exist_hou, exist_one])
     with open('Compared.csv', 'w+') as csvfile:
         csvwriter = csv.writer(csvfile, lineterminator = '\n')
+        csvwriter.writerow(['company', 'url', 'listingNo', 'ListingAddr', 'ListingTittle','ExistOnHougarden', 'ExistOnOneroof'])
         csvwriter.writerows(dataCSV)
 
 def remove_duplicate():
     c = DB.cursor()
     c.execute('SELECT * FROM Residential_Extract')
     All_Listing = c.fetchall()
+    time.sleep(5)
+
+    if mode != '1' or mode != '2':
+        clear_db(DB,'Residential_Extract_duplicate')
 
     listing_dic = {}
 
@@ -109,7 +124,7 @@ def Get_Raywhite_Main(url, page):
 def barfoot(url):
     while url != None:
         url = Get_Barfoot_Main(url)
-        
+
 def Get_Barfoot_Main(url):
     DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     response = requests.get(url, headers=random.choice(header), proxies = random.choice(proxies))
@@ -168,10 +183,9 @@ def Get_Bayley_Main(url):
     return next_page
 
 def init_db():
-    DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    
     if mode != '1' or mode != '2':
         clear_db(DB,'Residential_Extract')
-        clear_db(DB,'Residential_Extract_duplicate')
     logger.debug("initializing database")
     c = DB.cursor()
     c.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'Residential_Extract'")
