@@ -79,10 +79,11 @@ def CompareExport():
     # response = sg.send(message)
     sg = SendGridAPIClient(key)
     # response = sg.send(message)
+    print(message.get())
     try:
         response = sg.client.mail.send.post(request_body=message.get())
     except Exception as e:
-        print(str(e))
+        print(e.read())
         sys.exit(1)
 
 
