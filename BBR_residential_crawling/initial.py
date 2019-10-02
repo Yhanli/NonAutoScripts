@@ -69,10 +69,11 @@ def CompareExport():
     encoded = base64.b64encode(data).decode()
 
     attachment = Attachment()
-    attachment.content = encoded
-    attachment.type = "application/pdf"
-    attachment.filename = "Compared.csv"
-    attachment.disposition = "attachment"
+    attachment.set_content(encoded)
+    attachment.set_type("application/pdf")
+    attachment.set_filename("Compared.csv")
+    attachment.set_disposition("attachment")
+    attachment.set_content_id('CSV Attachment')
     message.add_attachment(attachment)
 
     # sg = SendGridAPIClient(key)
