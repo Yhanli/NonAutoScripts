@@ -15,8 +15,8 @@ DB = sqlite3.connect(currentDir + '/data.db', detect_types=sqlite3.PARSE_DECLTYP
 
 def CompareExport():
 
-    urllib.request.urlretrieve('https://hougarden-img.oss-ap-southeast-2.aliyuncs.com/crawler_conf/listings_hou.csv','/tmp/listings_hou.csv')
-    urllib.request.urlretrieve('https://hougarden-img.oss-ap-southeast-2.aliyuncs.com/crawler_conf/listings_one.csv','/tmp/listings_one.csv')
+    urllib.request.urlretrieve('http://s.hougarden.com/export/hougarden_active_listings.csv','/tmp/listings_hou.csv')
+    urllib.request.urlretrieve('http://s.oneroof.co.nz/export/oneroof_active_listings.csv','/tmp/listings_one.csv')
     with open('/tmp/listings_hou.csv', 'r', encoding='utf-8') as fp:
         csv_file_hou = fp.read()
     with open('/tmp/listings_one.csv', 'r', encoding='utf-8') as fp:
