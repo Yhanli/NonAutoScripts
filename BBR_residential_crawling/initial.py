@@ -75,10 +75,10 @@ def CompareExport():
     attachment.disposition = "attachment"
     attachment.content_id = "CSV Document file"
     message.add_attachment(attachment)
-    
+
     # sg = SendGridAPIClient(key)
     # response = sg.send(message)
-    sg = SendGridAPIClient(apikey=key)
+    sg = SendGridAPIClient(key)
 
     response = sg.client.mail.send.post(request_body=message.get())
 
