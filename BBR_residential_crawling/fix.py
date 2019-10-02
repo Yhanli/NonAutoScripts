@@ -29,3 +29,5 @@ with open('Compared_with_one.csv', 'w+') as csvfile:
     csvwriter = csv.writer(csvfile, lineterminator = '\n')
     csvwriter.writerow(['company','url', 'listingNo', 'ListingAddr', 'ListingTittle','ExistOnHougarden', 'ExistOnOneroof'])
     csvwriter.writerows(towrite)
+
+    
