@@ -15,6 +15,7 @@ lxml = "*"
 psutil = "*"
 bs4 = "*"
 zcrmsdk = "*"
+mysql-connector = "*"
 
 [requires]
 python_version = "3.7"
