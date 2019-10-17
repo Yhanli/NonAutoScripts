@@ -23,7 +23,13 @@ for i in result:
     mycursor.execute('select name from builder_brand where id = {0}'.format(i['brand_id']))
     company = mycursor.fetchone()['name']
     print(company)
-    print(i['ossImageLogo'][0:2])
+    try:
+        one = i['ossImageLogo'][0:2]
+        two = i['ossImageLogo'][2:4]
+        three = i['ossImageLogo']
+        avar = 'https://s.oneroof.co.nz/image/{0}/{1}/{2}'.format(one,two,three)
+    except:
+        avar = ''
     office_details_sample = {
         'url':i['website'],
         'company':company,
@@ -33,7 +39,7 @@ for i in result:
         'address':i['address'],
         'open_hours':'',
         'about_us':i['bio'],
-        "avatar":'https://s.oneroof.co.nz/image/{0}/{1}/{3}'.format(i['ossImageLogo'][0:2],i['ossImageLogo'][2:4],i['ossImageLogo']),
+        "avatar": avar,
         "google_coordinate":""}
     result_list.append(office_details_sample)
 
