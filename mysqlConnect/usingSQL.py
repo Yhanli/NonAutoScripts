@@ -20,4 +20,4 @@ result = mycursor.fetchall()
 print(result)
 
 with open('franchise.json', 'w+') as fp:
-    json.dump(result,fp)
+    json.dump({"data":result},fp)
