@@ -1,5 +1,5 @@
 import mysql.connector
-
+import json
 
 # this can only use accessed within the local network
 mydb = mysql.connector.connect(
@@ -10,10 +10,12 @@ mydb = mysql.connector.connect(
     database="test_oneroof"
 )
 
-mycursor = mydb.cursor()
 
-mycursor.execute('SELECT id, name FROM builder_franchise')
 
+mycursor = mydb.cursor(dictionary=True)
+
+mycursor.execute('SELECT * FROM builder_franchise')
 result = mycursor.fetchall()
-for i in result:
-    print(i)
+
+with open('franchise.json', 'w+') as fp:
+    json.dump(result,fp)
