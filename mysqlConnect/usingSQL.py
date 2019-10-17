@@ -21,8 +21,9 @@ result = mycursor.fetchall()
 result_list = []
 for i in result:
     mycursor.execute('select name from builder_brand where id = {0}'.format(i['brand_id']))
-    company = mycursor.fetchone()
+    company = mycursor.fetchone()['name']
     print(company)
+    print(i['ossImageLogo'])
     office_details_sample = {
         'url':i['website'],
         'company':company,
