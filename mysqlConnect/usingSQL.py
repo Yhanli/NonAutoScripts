@@ -17,5 +17,7 @@ mycursor = mydb.cursor(dictionary=True)
 mycursor.execute('SELECT * FROM builder_franchise')
 result = mycursor.fetchall()
 
+print(result)
+
 with open('franchise.json', 'w+') as fp:
     json.dump(result,fp)
