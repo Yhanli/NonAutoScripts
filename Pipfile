@@ -5,7 +5,6 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-autopep8 = "*"
 black = "*"
 
 [packages]
@@ -15,7 +14,10 @@ lxml = "*"
 psutil = "*"
 bs4 = "*"
 zcrmsdk = "*"
-mysql-connector = "*"
+dicttoxml = "*"
+oss2 = "*"
+mysql-connector-python = "*"
+pyxero = "*"
 
 [requires]
 python_version = "3.7"

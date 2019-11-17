@@ -45,3 +45,5 @@ for i in result:
 
 with open('franchise.json', 'w+') as fp:
     json.dump({"data":result_list},fp)
+
+
