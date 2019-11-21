@@ -34,6 +34,11 @@ def get_news_body(url, json_data, count):
     json_data["author"] = news_body.find('span', class_="author").text if "True Commercial" not in news_body.find('span', class_="author").text else ""
     json_data["site_name"] = "True Commercial"
     json_data["title"] = news_body.find('h1').text
+
+    date_time = news_body.find("span", class_="date").text
+    print(date_time)
+    json_data["publish_date"] = datetime.strptime(date_time, "%H:%M %p %A %B %d, %Y").strftime("%Y-%m-%d %H:%M:%S")
+
     contents = news_body.find_all('p')
     contents += news_body.find_all('div')
     cover = upload_img_oss("http://truecommercial.oneroof.co.nz" + news_body.find('img').get("src"))
@@ -43,7 +48,8 @@ def get_news_body(url, json_data, count):
             continue
         json_data["cleanhtml"] = json_data["cleanhtml"] + str(p)
 
-    print(json_data["title"])
+    json_data["cleanhtml"] = '<font color="#000000">' + json_data["cleanhtml"] + '</font>'
+    print(json_data["title"], cover[0])
     with open('extract/%s.json'%count, 'w+') as fp:
         json.dump(json_data, fp, ensure_ascii=False)
 
@@ -59,33 +65,55 @@ def upload_img_oss(img_link):
     bucket.put_object(fullDir, response.content)
     return [bucketSrc + fullDir + bucketSrcEnd, imgMD5 + imgType]
 
-while True:
-    link = "http://truecommercial.oneroof.co.nz/insights/news/?news=0&p=1&pp=799"
+def get_news():
+    while True:
+        link = "http://truecommercial.oneroof.co.nz/insights/news/?news=0&p=1&pp=799"
 
-    response = GetUrlContent(link)
-    testwrite(response.content)
-    data = GetBSsoup(response.content)
+        response = GetUrlContent(link)
+        testwrite(response.content)
+        data = GetBSsoup(response.content)
 
-    content_list = data.find_all('div', attrs={"class":"news-list-content"})
-    count = 1
-    for item in content_list:
-        try:
-            date = item.find("p", class_= "date").text.replace("Date ", "")
-            strTodate = datetime.strptime(date, "%b %Y")
-            if strTodate > datetime.now() - timedelta(days=190):
-                newslink = ("http://truecommercial.oneroof.co.nz" + item.find("a").get('href'))
-                json_item = copy.deepcopy(json_raw)
-                json_item["publish_date"] = strTodate.strftime("%Y-%m-%d")
-                json_item["news_category"] = "房地产"
-                json_item["brief"] = item.text.replace(item.find('h3').text,"").replace(item.find("p", class_= "date").text,"").replace("more","").strip()
-                get_news_body(url = newslink, json_data = json_item, count = str(count))
-                count += 1
+        content_list = data.find_all('div', attrs={"class":"news-list-content"})
+        count = 1
+        for item in content_list:
+            try:
+                date = item.find("p", class_= "date").text.replace("Date ", "")
+                strTodate = datetime.strptime(date, "%b %Y")
+                if strTodate > datetime.now() - timedelta(days=190):
+                    newslink = ("http://truecommercial.oneroof.co.nz" + item.find("a").get('href'))
+                    json_item = copy.deepcopy(json_raw)
+                    json_item["publish_date"] = strTodate.strftime("%Y-%m-%d")
+                    json_item["news_category"] = "commercial"
+                    json_item["original"] = newslink
+                    json_item["brief"] = item.text.replace(item.find('h3').text, "").replace(item.find("p", class_= "date").text, "").replace("more", "").strip()
+                    get_news_body(url = newslink, json_data = json_item, count = str(count))
 
-        except Exception as e:
-            print(str(e))
+                    count += 1
+            except Exception as e:
+                print(str(e))
+                continue
+
+
+        if not next_page:
+            break
+
+def combine():
+    from os import listdir
+    from os.path import isfile, join
+    onlyfiles = [f for f in listdir(currentDir + '/extract') if isfile(join(currentDir + '/extract', f))]
+    onlyfiles.sort()
+    final = []
+
+    for i in onlyfiles:
+        if ".D" in i:
             continue
+        with open("extract/%s"%i) as fp:
+            data = json.load(fp)
+            final.append(data)
+        os.remove("extract/%s"%i)
 
+    with open("TrueCommercial.json", 'w+') as fp:
+        json.dump({"data":final}, fp, ensure_ascii=False)
 
-    if not next_page:
-        break
-
+get_news()
+combine()
